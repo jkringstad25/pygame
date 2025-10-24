@@ -1,6 +1,6 @@
 from settings import *
-import moderngl as mgl 
 import pygame as pg
+import moderngl as mgl
 import sys
 
 class VoxelEngine:
@@ -11,19 +11,42 @@ class VoxelEngine:
         pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK, pg.GL_CONTEXT_PROFILE_CORE)
         pg.display.gl_set_attribute(pg.GL_DEPTH_SIZE, 24)
 
-        pg.display.set_mode(WIN_RES, flags=pg.OPENGL | pg.DOUBLEBUF)
+        pg.display.set_mode(WIN_RES, pg.OPENGL | pg.DOUBLEBUF)
         self.ctx = mgl.create_context()
         self.ctx.enable(flags=mgl.DEPTH_TEST | mgl.CULL_FACE | mgl.BLEND)
         self.ctx.gc_mode = 'auto'
-        
+        self.ctx.clock = pg.time.Clock()
+        self.delta_time = 0
+        self.time = 0
+
+        self.is_running = True
+
+
+
     def update(self):
-        pass
+        self.delta_time = self.ctx.clock.tick()
+        self.time = pg.time.get_ticks() * 0.001
+        pg.display.set_caption(f'{self.ctx.clock.get_fps() :.0f}')
+
+
     def render(self):
-        pass
+        self.ctx.clear()
+        pg.display.flip()
+
+
     def handle_events(self):
-        pass
+        for event in pg.event.get():
+            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+                self.is_running = False
+
+
     def run(self):
-        pass
+        while self.is_running:
+            self.handle_events()
+            self.update()
+            self.render()
+        pg.quit()
+        sys.exit()
 
 
 
